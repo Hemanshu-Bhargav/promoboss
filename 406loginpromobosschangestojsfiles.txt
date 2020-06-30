@@ -1,0 +1,272 @@
+              <div class="form-group">
+                <label for="EmpID">EmpID</label>
+                <input
+                  type="empid"
+                  id="empid"
+                  name="empid"
+                  class="form-control"
+                  placeholder="Enter EmpID"
+                  value="<%= typeof empid != 'undefined' ? empid : '' %>"
+                />
+              </div>
+
+           //one for login.ejs, one for register.ejs
+             <div class="form-group">
+              <label for="EmpID">EmpID</label>
+              <input
+                type="empid"
+                id="empid"
+                name="empid"
+                class="form-control"
+                placeholder="Enter EmpID"
+                value="<%= typeof empid != 'undefined' ? empid : '' %>"
+              />
+            </div>
+//index.js as the name suggests is the index, or the main control of all routing
+//Rerouting to both dashboards from the login page takes place here
+
+const express = require('express');
+//const jquery = require( 'jquery' );
+//const datatables = require( 'datatables.net-dt' )();
+const router = express.Router();
+const { ensureAuthenticated } = require('../dbconnection/authenticator');
+// Commented out forwardAuthenticated middleware due to bug which defeats the purpose of authentication
+// Welcome Page
+router.get('/', (req, res) => res.render('welcome'));
+//router.get('/dashboard', forwardAuthenticated, (req, res) => res.render('dashboard'));
+
+
+// Manager Dashboard (Fully functional dashboard)
+router.get('/dashboard', ensureAuthenticated, (req, res) =>
+  res.render('dashboard', {
+    Users: req.Users
+  })
+);
+//Employee Dashboard, is a restricted version of Managers, in the sense that code generation is unavailable
+router.get('/empdashboard', ensureAuthenticated, (req, res) =>
+  res.render('empdashboard', {
+    Users: req.Users
+  })
+);
+
+ module.exports = router;
+
+
+//also comment that authetnoricor buggy
+=================== below is users.js
+const express = require('express');
+const router = express.Router();
+const bcrypt = require('bcryptjs');
+const passport = require('passport');
+// const { ensureAuthenticated, forwardAuthenticated } = require('../config/auth');
+
+//This is the model for each User or Employee entered into the database
+const Users = require('../models/Users');
+
+// Login Page
+router.get('/login', (req, res) => res.render('login'));
+// ForwardAuthenticated,
+
+// Register Page
+router.get('/register', (req, res) => res.render('register'));
+
+//Register Handle
+router.post('/register', (req, res) => {
+    const { name, email, password, password2, empid } = req.body;
+    let errors = [];
+    // Check required fields, if not avail, push msg object
+    if (!name || !email || !password || !password2 || empid) {
+      errors.push({ msg: 'Please enter all fields' });
+    }
+    //Check passwords match
+    if (password != password2) {
+      errors.push({ msg: 'Passwords do not match' });
+    }
+    if (empid < 4 && empid > 6)
+    {
+      errors.push({msg: 'Employee ID must be 5 characters long' });
+    }
+  //Check password length
+    if (password.length < 6) {
+      errors.push({ msg: 'Password must be at least 6 characters' });
+    }
+    // if any of above errors are true (error len >0) then we want to rerender 
+    // the register page (prompt Users to try again), otherwise (else condition) go ahead
+    // and register the Users
+    if (errors.length > 0) 
+    { //Not only can we render register page, but also variables as well because we're using a template engine
+      res.render('register', {
+          //variables to pass are what needs correction from potential Users
+        errors,
+        //Also need to pass in data that was entered correctly
+        //Without this data passed, entire register form clears itself
+        name,
+        email,
+        password,
+        password2,
+        empid
+      });
+    } 
+    else 
+    {
+        //Validation passed
+        //Mongoose method that finds one record from MongoDb
+        Users.findOne({email: email})
+        .then(Users => {
+            if(Users){
+                //if there's a Users, rerender register form as above and send error
+                errors.push({msg: 'Email is already registered'});
+                res.render('register', {
+                    //variables to pass are what needs correction from potential Users
+                  errors,
+                  //Also need to pass in data that was entered correctly
+                  //Without this data passed, entire register form clears itself
+                  name,
+                  email,
+                  password,
+                  password2,
+                  empid
+                });
+            }
+            else {
+                //If there's isnt an Users, create a new one
+                const newUsers = new Users({
+                    //pass in values for new instatiated Users
+                    name, //same as name: name, just shortened because ES6 JS allows this
+                    email,
+                    password,
+                    empid
+                });
+                //Hash password w/ bcrypt
+                //Generate a 'salt' w/gensalt to create a hash
+                bcrypt.genSalt(10, (err, salt) => 
+                bcrypt.hash(newUsers.password, salt, (err, hash) => {
+                    if(err) throw err;
+                    newUsers.password = hash; //plain-text password is now hashed
+                    //Save Users to MongoDB collection
+                    newUsers.save()
+                        .then(Users => {
+                            //Pass express session flash error before redirect
+                            req.flash('success_msg', 'Congrats! You can now access your company dashboard!');
+                            res.redirect('/users/login'); //redirect to login page
+                        }).catch(err => console.log(err));
+
+                }))
+            }
+        });
+    }
+
+});
+
+//Route the login screen & functionality
+router.post('/login', (req, res, next) => {
+  passport.authenticate('local', {
+    successRedirect: '/dashboard',
+    successRedirect: '/codemanager',
+    failureRedirect: '/users/login',
+    failureFlash: true
+  })(req, res, next);
+});
+
+// Route the logout screen & functionality onclick of "logout" button
+// found on code dashboard
+router.get('/logout', (req, res) => {
+  req.logout(); //standard express middleware logout function
+  req.flash('success_msg', 'You have logged out');
+  res.redirect('/users/login'); //redirect to log out
+});
+
+// // Dashboard
+// router.get('/dashboard', ensureAuthenticated, (req, res) =>
+//   res.render('dashboard', {
+//     Users: req.Users
+//   })
+// );
+
+ module.exports = router;
+
+=========================new app.js
+// Standard dependecies, middleware etc required by NodeJS 
+// Express is our main subframework within Nodejs, can be thought of as a subset of nodejs utilized for front-end development
+const express = require('express');
+//EJS is the template engine of choice. Other possible alternative are Pug and Handlebars. Template engines replace .html files
+// They basically output the html, combined with dynamic JS variables from our express framework
+const expressLayouts = require('express-ejs-layouts');
+//mongoose connects and exports data to our mongodb database
+const mongoose = require('mongoose');
+//passport compares against user credentials against  
+const passport = require('passport');
+// connect-flash and express-session store session data so that new user registration is properly stored and
+// so that client-side validation occurs correctly
+const flash = require('connect-flash');
+const session = require('express-session');
+const jquery = require( 'jquery' );
+//Program crashes with nodejs require format, so use path module and local directories instead
+//DataTables is a jquery plugin which includes search and sorting functionalities
+// const datatables = require('datatables.net-dt' )();
+// const dt = require( 'datatables.net' )( window, $ );
+ const app = express();
+//to join folders to nodejs framework
+const path = require('path');
+//join local datatables folder to expressjs app
+app.use(express.static(path.join(__dirname, 'DataTables')))
+app.use(express.static(path.win32.join(__dirname, 'bootstrap.css')))
+
+// Passport Configuartion, see config folder
+require('./dbconnection/passport')(passport);
+
+//DB Config, keys holds the MongoDB Atlas (cloud) cluster, and Hemanshu's password
+// Password and Cluster info to be removed when handing in source code!
+const db = require('./dbconnection/keys').mongoURI;
+
+// Connect to MongoDB
+mongoose
+  .connect(
+    db,
+    { useUnifiedTopology: true, useNewUrlParser: true }
+  )
+  .then(() => console.log('MongoDB Connected'))
+  .catch(err => console.log(err));
+
+// EJS
+app.use(expressLayouts);
+app.set('view engine', 'ejs');
+
+// Express body parser
+app.use(express.urlencoded({ extended: true }));
+
+// Express session
+app.use(
+  session({
+    secret: 'secret',
+    resave: true,
+    saveUninitialized: true
+  })
+);
+
+// Passport middleware, order is important, must be after session
+// so that the registration process completes, but before flash
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Connect flash
+app.use(flash());
+
+// Global variables for coloured messages, sucess as green, errors as red
+app.use(function(req, res, next) {
+  //Success and error messages to be displayed during registration
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  //Error message to be displayed if a user who does not exist in PromoBoss database attempts to login 
+  res.locals.error = req.flash('error');
+  next();
+});
+
+// Routes middleware to appropirate paths
+app.use('/', require('./routes/index')); // Routes to index.js when no path specified in URL
+app.use('/users', require('./routes/users')); // Routes to demo.js when /users path is valid (login or register action has occured)
+
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, console.log(`Server started on port ${PORT}`));

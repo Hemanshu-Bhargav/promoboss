@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Welcome</title>
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.js"
+      integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+      crossorigin="anonymous">
+    </script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- included both bootstrap slim jquery and core, pick one later but should be ok -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+    <!-- jquery plugin for form validation -->
+    <script src="vendor/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="./indexv3.js"></script>
+  </head>
+  <style>
+  .table-layout tr:hover {
+      background-color: violet;
+  }
+  .table-layout {
+      text-align: center;
+      border: 1px solid black;
+      border-collapse: collapse;
+      font-family:"Trebuchet MS";
+      margin: 0 auto 0;
+  }
+  .table-layout td, .table-layout th {
+      border: 1px solid white;
+      padding: 5px 5px 0;
+  }
+  .table-layout td {
+      text-align: center;
+  }
+  .selected {
+      color: black;
+  }
+  </style>
+  <body>
+    <h1>Welcome, </h1>
+    <h3>Today's Code Dashboard</h3>
+    <button onclick="generateCodescolumn()">Generate New Codes</button>
+    <table id="display-table" class="table table-layout table-striped table-hover"style="width:100%">
+        <thead>
+            <th>Code</th>
+            <th>Status</th>
+            <th> Expiry Date</th>
+            <th></th>
+        </thead>
+        <tbody>
+            <tr>
+                <td> <button onclick="myFunction()">100</button></td>
+                <td id = "tell">Available</td>
+                <td>01/01/19</td>
+            </tr>
+            <tr>
+                <td><button onclick="myFunction()">101</button</td>
+                <td id = "tell">Available</td>
+                <td>04/03/19</td>
+            </tr>
+            <tr>
+                <td><button onclick="myFunction()">102</button></td>
+                <td>Available</td>
+                <td>03/04/19</td>
+            </tr>
+        </tbody>
+    </table>
+    <table id="codes_Table" class="table table-striped table-hover" width="100%">
+        <thead>
+            <tr>
+                <th>Employee Number</th>
+                <th>Codes</th>
+                <th>Used</th>
+                <th>Codes Requested</th>
+                <th>Date/Time Launched</th>
+                <th>Date/Time Used</th>
+                <th>Expiry Date</th>
+                <th>Store Number</th>
+                <th>Associated Store Manager</th>
+                <th>Associated Regional Manager</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>A1</td>
+                <td><button onclick="myFunction()">A4123C</td>
+                <td>A3</td>
+                <td>A4</td>
+                <td>A5</td>
+                <td>A6</td>
+                <td>A6</td>
+                <td>>A6</td>
+                <td><button onclick="myFunction()">08201</td>
+                <td>09201</td>
+            </tr>
+            <tr>
+              <td>A2</td>
+              <td><button onclick="myFunction()">B2</td>
+              <td>B3</td>
+              <td>B4</td>
+              <td>C1</td>
+              <td>C6</td>
+              <td>A6</td>
+              <td>A6</td>
+              <td>08201</td>
+              <td>09201</td>
+            </tr>
+        </tbody>
+    </table>
+    <table id="employees_Table" class="table table-striped table-hover" width="100%">
+        <thead>
+            <tr>
+                <th>Employee Number</th>
+                <th>Employee Name</th>
+                <th>Codes Used</th>
+                <th>Codes Requested</th>
+                <th>Store Number</th>
+                <th>Associated Store Manager</th>
+                <th>Associated Regional Manager</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="table-danger">
+              <td>1101</td>
+              <td>TRUE</td>
+              <td>FALSE</td>
+              <td>TRUE</td>
+              <td>FALSE</td>
+              <td>FALSE</td>
+              <td>TRUE</td>
+            </tr>
+            <tr>
+              <td>1102</td>
+              <td>Jane Doe</td>
+              <td>Timestamp</td>
+              <td>Omit Employee Numbers since those are sign in tools?</td>
+              <td>A</td>
+              <td>A</td>
+              <td>A</td>
+            </tr>
+            <tr>
+              <td>1103</td>
+              <td>Josh Doe</td>
+              <td>A</td>
+              <td>Vacation</td>
+              <td>A</td>
+              <td>A</td>
+              <td>A</td>
+            </tr>
+            <tr class="table-success">
+              <td>1104</td>
+              <td>USED</td>
+              <td>AVAILABLE</td>
+              <td>USED</td>
+              <td>USED</td>
+              <td>REQUESTED</td>
+              <td>AVAILABLE</td>
+            </tr>
+            <tr>
+              <td>1105</td>
+              <td class="table-danger">TRUE</td>
+              <td class="table-success">FALSE</td>
+              <td>AVAILABLE</td>
+              <td>USED</td>
+              <td>REQUESTED</td>
+              <td>AVAILABLE</td>
+            </tr>
+            <tfoot>
+                <tr>
+                  <th>Employee Number</th>
+                  <th>Employee Name</th>
+                  <th>Codes Used</th>
+                  <th>Codes Requested</th>
+                  <th>Store Number</th>
+                  <th>Associated Store Manager</th>
+                  <th>Associated Regional Manager</th>
+                </tr>
+            </tfoot>
+        </tbody>
+    </table>
+  </body>
+</html>

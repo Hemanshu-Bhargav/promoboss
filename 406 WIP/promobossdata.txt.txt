@@ -1,0 +1,20 @@
+//Below is valid mongo db syntax
+{
+	field1: value1;
+}
+
+{
+	first_name:"John",
+	last_name:"Doe",
+	memberships: ["mem1", "District Manager"],
+	address: {
+			street:"4 main st",
+			city:"Boston"
+	}
+	contacts:[
+		{name:"Jack", relationship:"Store Manager"}
+db.createUser( {
+	user:"brad"
+	pwd:"1234"
+	roles:["readwrite", "dbAdmin"]
+}   );

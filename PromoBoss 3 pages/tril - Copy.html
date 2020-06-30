@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>FILEFILE-COPY</title>
+
+    </head>
+    <style>
+    textarea {
+        width: 300px;
+        height: 150px;
+      }
+
+      </style>
+      <link rel="stylesheet" type="text/css" href="bootstrap.min.css" media="screen"/>
+      <script type="text/javascript" src="./indexv3.js"></script>
+    <body>
+
+        
+        <h1 class="navbar navbar-expand-lg navbar-light bg-light" >Add Codes </h1>
+
+        <form name="myform">
+            <button  type="button" class="btn btn-secondary" onclick="codeGenerator()">Generate New Codes</button>
+            <br>
+            <label> <h2>Enter Codes Manually: </label> </h2>
+            <table border="0" cellspacing="0" cellpadding="5"><tr>
+            <td><textarea name="inputtext"></textarea></td>
+          <br>
+        
+            <td><input type="radio" name="placement" value="append" checked>  Add to Existing List  </td> 
+           
+            <td><input type="radio" name="placement" value="replace"> Replace Existing List</td> 
+            
+            
+            <td><textarea name="outputtext" id="listit"></textarea></td> 
+            </tr></table>
+            </form>
+      
+            
+            <div>
+                    <label for="adding"> <h2>Specify a file to upload:</label></h2><br>
+                    <input type="file" class="btn btn-secondary" id="adding"> <br style = "line-height:2"> <br>
+
+                    <input type="button" class="btn btn-secondary" value="Add New Codes" onClick="sendcodes();" onclick="splitText();">
+                   </div>
+                   
+                                   
+    </body>
+
+<script>
+    document.getElementById('adding')
+  .addEventListener('change', getFile)
+
+
+
+function getFile(event) {
+	const input = event.target
+  if ('files' in input && input.files.length > 0) {
+	  placeFileContent(
+      document.getElementById('listit'),
+      input.files[0])
+  }
+}
+
+function placeFileContent(target, file) {
+	readFileContent(file).then(content => {
+  	target.value = content
+  }).catch(error => console.log(error))
+}
+
+function readFileContent(file) {
+	const reader = new FileReader()
+  return new Promise((resolve, reject) => {
+    reader.onload = event => resolve(event.target.result)
+    reader.onerror = error => reject(error)
+    reader.readAsText(file)
+  })
+}
+      function sendcodes() {
+        var newtext = document.myform.inputtext.value;
+        if (document.myform.placement[1].checked) {
+          document.myform.outputtext.value = "";
+          }
+        document.myform.outputtext.value += newtext;
+      }
+</script>
