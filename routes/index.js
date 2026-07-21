@@ -1,17 +1,30 @@
 const express = require('express');
 const router = express.Router();
-const { ensureAuthenticated } = require('../dbvalidation/authenticator');
-// Commented out forwardAuthenticated middleware due to bug which defeats the purpose of authentication
-// Welcome Page
-router.get('/', (req, res) => res.render('welcome'));
-//router.get('/dashboard', forwardAuthenticated, (req, res) => res.render('dashboard'));
+const { ensureAuthenticated, forwardAuthenticated } = require('../dbvalidation/authenticator');
 
+// Welcome Page (Protected with forwardAuthenticated so logged-in users bypass the welcome/login page)
+router.get('/', forwardAuthenticated, (req, res) => res.render('welcome'));
 
-// Dashboard
+// Dashboard Route (Protected)
 router.get('/dashboard', ensureAuthenticated, (req, res) =>
   res.render('dashboard', {
     user: req.user
   })
 );
 
- module.exports = router;
+// Code Management Page Route (Protected - matches the button link in the dashboard view)
+router.get('/codemanager', ensureAuthenticated, (req, res) =>
+  res.render('codemanager', {
+    user: req.user
+  })
+);
+
+// Logout Route (Handled in router to match dashboard logout button link /users/logout)
+router.get('/logout', (req, res, next) => {
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    res.redirect('/');
+  });
+});
+
+module.exports = router;
