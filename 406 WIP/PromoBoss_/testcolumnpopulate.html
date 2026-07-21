@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Asset Management Checklist Mockup</title>
+ <script type='text/javascript'>
+var clientAgreement = 'Client Agreement';
+
+var docTable = document.getElementById('assets');
+var rows = document.querySelectorAll('#assets tr');
+
+// iterate rows
+for (var i = 1; i < rows.length; i++) {
+  // get cell for class "check"
+  var checkCell = rows[i].getElementsByClassName("check")[0];
+  var docTypeCell = rows[i].getElementsByClassName("identifier")[0];
+  if (docTypeCell.textContent  === clientAgreement) {
+    checkCell.innerHTML = "Yes";
+  } else if (docTypeCell.textContent.length === 0) {
+    checkCell.innerHTML = "No";
+  }
+}
+ </script> 
+
+</head>
+<body>
+
+<h1><em>Asset Management Department</em></h1>
+
+  <h2>Preview of automated report generation of <em>Documents Check List</em> on SharePoint.<h2> 
+
+  <table style="width:100%">
+ <caption>Asset Management</caption>
+ <tr>
+
+<th>Client Name</th>
+<th>Portfolio Number</th>
+<th>Portfolio Type</th>
+<th id='doctype'>Document Type</th>
+<th>Month</th>
+<th>Year</th>
+<th id='checklist'>Check List Status</th>
+  </tr>
+ <tr>
+<td>Smith</td>
+<td>101</td>
+<td>ABC</td>
+<td id='client'>Clinet Agreement</td>
+<td>February</td>
+<td>2001</td>
+<th></th>
+
+ </tr>
+ <tr>
+<td>Smith</td>
+<td>101</td>
+<td>ABC</td>
+<td id='email'>Email</td>
+<td>February</td>
+<td>2001</td>
+<th></th>
+ </tr>
+
+<tr>
+<td>Smith</td>
+<td>101</td>
+<td>ABC</td>
+<td id='passport'>Passport Copy</td>
+<td>February</td>
+<td>2001</td>
+<th></th>
+  </tr>
+
+<tr>
+<td>Smith</td>
+<td>101</td>
+<td>ABC</td>
+<td id='nation'>Nationality</td>
+<td>February</td>
+<td>2001</td>
+<th></th>
+ </tr>
+
+ <tr>
+<td>Smith</td>
+<td>101</td>
+<td>ABC</td>
+<td od='poa'>Proof of Address</td>
+<td>February</td>
+<td>2001</td>
+<th></th>
+ </tr>
+
+ <tr>
+<td>Smith</td>
+<td>101</td>
+<td>ABC</td>
+<td id='home'>Home Address</td>
+<td>February</td>
+<td>2001</td>
+<th></th>
+ </tr>
+
+ </tr>
+
+ <tr>
+<td>Smith</td>
+<td>101</td>
+<td>ABC</td>
+<td id='pa'>Postal Address</td>
+<td>February</td>
+<td>2001</td>
+<th></th>
+ </tr>
+
+ <tr>
+<td>Smith</td>
+<td>101</td>
+<td>ABC</td>
+<td id='visa'>Visa Expiry Date</td>
+<td>February</td>
+<td>2001</td>
+<th></th>
+ </tr>
+
+<tr>
+<td>Smith</td>
+<td>101</td>
+<td>ABC</td>
+<td id='family'>Family Book</td>
+<td>February</td>
+<td>2001</td>
+<th></th>
+</tr>
+
+</table>
+
+</body>
+</html>
