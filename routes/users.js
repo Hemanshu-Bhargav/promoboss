@@ -2,18 +2,19 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
+const { ensureAuthenticated, forwardAuthenticated } = require('../dbvalidation/authenticator');
 
 // User model
 const User = require('../dbschema/User');
 
-// Login Page
-router.get('/login', (req, res) => res.render('login'));
+// Login Page (Protected with forwardAuthenticated so logged-in users bypass login)
+router.get('/login', forwardAuthenticated, (req, res) => res.render('login'));
 
-// Register Page
-router.get('/register', (req, res) => res.render('register'));
+// Register Page (Protected with forwardAuthenticated)
+router.get('/register', forwardAuthenticated, (req, res) => res.render('register'));
 
 // Register Handle
-router.post('/register', (req, res) => {
+router.post('/register', forwardAuthenticated, (req, res) => {
     const { name, email, password, password2 } = req.body;
     let errors = [];
 
@@ -35,7 +36,6 @@ router.post('/register', (req, res) => {
             errors,
             name,
             email
-            // SECURITY FIX: Omit raw passwords from being passed back to the view
         });
     }
 
@@ -71,7 +71,7 @@ router.post('/register', (req, res) => {
                         return res.status(500).render('register', { errors: [{ msg: 'Server error during registration' }], name, email });
                     }
 
-                    newUser.password = hash; // Plain-text password is now hashed
+                    newUser.password = hash;
 
                     // Save User to MongoDB collection
                     newUser.save()
@@ -93,7 +93,7 @@ router.post('/register', (req, res) => {
 });
 
 // Login functionality
-router.post('/login', (req, res, next) => {
+router.post('/login', forwardAuthenticated, (req, res, next) => {
     passport.authenticate('local', {
         successRedirect: '/dashboard',
         failureRedirect: '/users/login',
@@ -101,25 +101,20 @@ router.post('/login', (req, res, next) => {
     })(req, res, next);
 });
 
-// Codemanager Page
-router.get('/codemanager', (req, res) => {
-    res.render('codemanager');
+// Codemanager Page (Protected with ensureAuthenticated)
+router.get('/codemanager', ensureAuthenticated, (req, res) => {
+    res.render('codemanager', {
+        user: req.user
+    });
 });
 
-// Logout functionality (Updated for Passport v0.6+)
-router.get('/logout', (req, res, next) => {
+// Logout functionality
+router.get('/logout', ensureAuthenticated, (req, res, next) => {
     req.logout((err) => {
         if (err) { return next(err); }
         req.flash('success_msg', 'You have logged out');
         res.redirect('/users/login');
     });
 });
-
-// Dashboard (Uncomment when ready)
-// router.get('/dashboard', ensureAuthenticated, (req, res) =>
-//    res.render('dashboard', {
-//      user: req.user
-//    })
-// );
 
 module.exports = router;
